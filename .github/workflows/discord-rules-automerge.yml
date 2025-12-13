@@ -24,7 +24,7 @@ jobs:
         with:
           script: |
             const owner = context.repo.owner;
-            const repo = context.repo.repo;
+            const repo  = context.repo.repo;
 
             const run = context.payload.workflow_run;
             const headSha = run.head_sha;
@@ -61,21 +61,47 @@ jobs:
               const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
 
               if (pr.base.ref !== "master") { core.info(`Skipping PR #${prNumber}: base is ${pr.base.ref}`); continue; }
-              if (pr.state !== "open") { core.info(`Skipping PR #${prNumber}: state is ${pr.state}`); continue; }
-              if (pr.draft) { core.info(`Skipping PR #${prNumber}: draft`); continue; }
+              if (pr.state !== "open")      { core.info(`Skipping PR #${prNumber}: state is ${pr.state}`); continue; }
+              if (pr.draft)                 { core.info(`Skipping PR #${prNumber}: draft`); continue; }
 
-              // Only auto-merge PRs opened by org members/owners.
-              // (This also excludes outside collaborators; add "COLLABORATOR" if you want to allow them.)
-              const assoc = (pr.author_association || "UNKNOWN").toUpperCase();
-              const allowed = new Set(["OWNER", "MEMBER"]);
-              if (!allowed.has(assoc)) {
-                core.info(`Skipping PR #${prNumber}: author_association=${assoc} (not OWNER/MEMBER)`);
+              // Only merge the exact commit SHA that passed validation (avoid races).
+              if (pr.head.sha !== headSha) {
+                core.info(`Skipping PR #${prNumber}: head moved to ${pr.head.sha}, validated ${headSha}`);
                 continue;
               }
 
-              // Safety: skip forks by default
-              if (pr.head.repo.full_name !== `${owner}/${repo}`) {
-                core.info(`Skipping PR #${prNumber}: fork (${pr.head.repo.full_name})`);
+              // Gate on repo permission for the PR author: admin / maintain / write.
+              const username = pr.user?.login;
+              if (!username) {
+                core.info(`Skipping PR #${prNumber}: missing PR author login`);
+                continue;
+              }
+
+              let permData;
+              try {
+                permData = await github.rest.repos.getCollaboratorPermissionLevel({
+                  owner,
+                  repo,
+                  username,
+                });
+              } catch (e) {
+                // Most commonly: 404 if the user is not a collaborator / has no access.
+                core.info(`Skipping PR #${prNumber}: cannot read permission for ${username} (${e.status || "unknown"} ${e.message})`);
+                continue;
+              }
+
+              const permission = (permData.data.permission || "none").toLowerCase();  // admin | write | read | none
+              const roleName   = (permData.data.role_name  || "").toLowerCase();     // admin | maintain | write | triage | read | custom (when present)
+
+              // maintain maps to write in the legacy 'permission' field, so accept either signal.
+              const allowedRoles = new Set(["admin", "maintain", "write"]);
+              const isAllowed =
+                allowedRoles.has(roleName) ||
+                permission === "admin" ||
+                permission === "write";
+
+              if (!isAllowed) {
+                core.info(`Skipping PR #${prNumber}: author ${username} permission=${permission} role_name=${roleName || "(none)"} (need admin/maintain/write)`);
                 continue;
               }
 
@@ -95,7 +121,7 @@ jobs:
                   break;
                 }
 
-                const methods = ["squash", "merge"];
+                const methods = ["squash", "merge", "rebase"];
                 let merged = false;
 
                 for (const method of methods) {
