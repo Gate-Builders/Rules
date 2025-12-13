@@ -219,3 +219,20 @@ Could be:
 
 * PR is a draft
 * PR is from a fork (often skipped)
+
+### Action is stuck on "Discord Rules Validate / validateExpected — Waiting for status to be reported"
+
+A permission change will be required:
+
+```bash
+gh api \
+  -X PUT \
+  -H "Accept: application/vnd.github+json" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  "repos/${OWNER}/${REPO}/branches/master/protection/required_status_checks/contexts" \
+  --input - <<'JSON'
+{
+  "contexts": ["validate"]
+}
+JSON
+```
