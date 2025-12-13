@@ -5,6 +5,10 @@ on:
     branches: [master]
   workflow_dispatch: {}
 
+concurrency:
+  group: discord-rules-apply-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
   contents: read
 
