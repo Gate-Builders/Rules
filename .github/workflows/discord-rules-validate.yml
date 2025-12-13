@@ -1,0 +1,32 @@
+name: Discord Rules Validate
+
+on:
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r .bot/requirements.txt
+
+      - name: Run bot validate
+        env:
+          BOT_MODE: validate
+        run: python .bot/bot.py
