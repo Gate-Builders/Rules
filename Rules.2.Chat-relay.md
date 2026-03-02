@@ -1,5 +1,9 @@
-## Chat relay
+## Chat relays
 
-We have a group chat relay from <:Discord:1442537480917356624><#1342589627613319288> to the <:SL:1367089201371414619>[in-world Second Life group](<https://world.secondlife.com/group/7472ca34-ac0a-7e76-ebd7-4ec18b94adfc>). To participate in it, you'll need the <:Discord:1442537480917356624>`@ATA gene` role.
+-# For channels ending in `-group`, messages are relayed between Discord and a Second Life group chat.
 
-To acquire the <:Discord:1442537480917356624>`@ATA gene` , update your Discord name on this server to match your Second Life name, such as `Ash Qin` or `Beepboop (ash.qin)`. After making the change, request the ATA gene therapy in <:Discord:1442537480917356624><#1334193814453358715>, an <:Discord:1442537480917356624>`@Moderator` will then verify you.
+To participate in these chats, you will need the <:Discord:1442537480917356624>`@ATA gene` role. To get the <:Discord:1442537480917356624>`@ATA gene` role:
+
+1. Set your *server nickname* to match your Second Life name (e.g. `Ash Qin` or `Beepboop (ash.qin)`).
+2. Ask for ATA gene therapy in <:Discord:1442537480917356624><#1334193814453358715>.
+3. A <:Discord:1442537480917356624>`@Moderator` will verify you and assign the role.
