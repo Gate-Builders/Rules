@@ -21,9 +21,9 @@
   - *Support* (general & technical):
     - Use <:Discord:1442537480917356624><#1334198317428772874> or the <:AF:1351928274795888711>[Support ticket system](<https://www.alpha-fox.com/support/tickets/>).
 - **Novum Network**:
-  - Use <:Discord:1442537480917356624><#1445172482456944904> to reach Novum Network staff
+  - Use <:Discord:1442537480917356624><#1445172482456944904> to reach Novum Network staff.
 - **Universe Network**:
-  - Use <:Discord:1442537480917356624><#1481257046790770841> to reach Universe Network staff..
+  - Use <:Discord:1442537480917356624><#1481257046790770841> to reach Universe Network staff.
 
 ### Sims
 -# Issues relating to regions/sims, parcels, or in-world environments.
